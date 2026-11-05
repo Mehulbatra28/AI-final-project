@@ -47,6 +47,9 @@ public class PlayerMoveMent : MonoBehaviour
     private int speedHash;
     private bool hasIsWalkingParam;
     private bool hasSpeedParam;
+    [SerializeField] private string throwParameter = "Throw";
+    private int throwHash;
+    private bool hasThrowParam;
 
     private void Awake()
     {
@@ -92,8 +95,38 @@ public class PlayerMoveMent : MonoBehaviour
         ApplyRotation(moveDirection);
         ApplyGravity();
         UpdateAnimations(input.magnitude);
+        HandleThrowInput();
     }
+    private void HandleThrowInput()
+    {
+        bool throwPressed=false;
+        #if ENABLE_INPUT_SYSTEM
+        if(Keyboard.current!=null)
+        {
+            throwPressed=Keyboard.current.eKey.wasPressedThisFrame;
+        }
+        #else
+        throwPressed=Input.GetKeyDown(KeyCode.E);
+        #endif
 
+        if(throwPressed)
+        {
+            Debug.Log("[Throw] E key pressed!");
+            Debug.Log($"[Throw] animator is null? {animator == null}");
+            Debug.Log($"[Throw] hasThrowParam? {hasThrowParam}");
+            Debug.Log($"[Throw] throwParameter name: '{throwParameter}'");
+
+            if(animator!=null && hasThrowParam)
+            {
+                Debug.Log("[Throw] Setting Throw trigger NOW");
+                animator.SetTrigger(throwHash);
+            }
+            else
+            {
+                Debug.LogWarning("[Throw] Could NOT trigger throw — animator or param missing!");
+            }
+        }
+    }
     /// <summary>
     /// Reads movement input from keyboard (WASD / Arrows) and Gamepad.
     /// Supports New Input System and Legacy Input Manager.
@@ -234,6 +267,9 @@ public class PlayerMoveMent : MonoBehaviour
 
         hasIsWalkingParam = HasParameter(animator, isWalkingParameter);
         hasSpeedParam = HasParameter(animator, speedParameter);
+
+        throwHash = Animator.StringToHash(throwParameter);
+        hasThrowParam = HasParameter(animator, throwParameter);
     }
 
     private bool HasParameter(Animator anim, string paramName)
