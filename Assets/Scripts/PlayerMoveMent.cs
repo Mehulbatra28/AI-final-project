@@ -2,6 +2,7 @@ using UnityEngine;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 #endif
 
 /// <summary>
@@ -50,6 +51,12 @@ public class PlayerMoveMent : MonoBehaviour
     [SerializeField] private string throwParameter = "Throw";
     private int throwHash;
     private bool hasThrowParam;
+    public float throwForce = 15f;
+    public float rocksize = 0.3f;
+    public GameObject rockPrefab;
+    public float rockLifeTime = 5f;
+    public int maxRocks = 3;
+    public int currentRocks;
 
     private void Awake()
     {
@@ -84,6 +91,8 @@ public class PlayerMoveMent : MonoBehaviour
 
         // Re-cache parameters in case AnimatorController was assigned dynamically
         CacheAnimatorParameters();
+        currentRocks = maxRocks;
+        GameUIManager.instance.RocksCount(currentRocks);
     }
 
     private void Update()
@@ -99,33 +108,52 @@ public class PlayerMoveMent : MonoBehaviour
     }
     private void HandleThrowInput()
     {
-        bool throwPressed=false;
-        #if ENABLE_INPUT_SYSTEM
-        if(Keyboard.current!=null)
+        bool throwPressed = false;
+#if ENABLE_INPUT_SYSTEM
+        if (Keyboard.current != null)
         {
-            throwPressed=Keyboard.current.eKey.wasPressedThisFrame;
+            throwPressed = Keyboard.current.eKey.wasPressedThisFrame;
         }
-        #else
+#else
         throwPressed=Input.GetKeyDown(KeyCode.E);
-        #endif
+#endif
 
-        if(throwPressed)
+        if (throwPressed)
         {
-            Debug.Log("[Throw] E key pressed!");
-            Debug.Log($"[Throw] animator is null? {animator == null}");
-            Debug.Log($"[Throw] hasThrowParam? {hasThrowParam}");
-            Debug.Log($"[Throw] throwParameter name: '{throwParameter}'");
-
-            if(animator!=null && hasThrowParam)
+            if (currentRocks <= 0)
             {
-                Debug.Log("[Throw] Setting Throw trigger NOW");
+                return;
+            }
+            currentRocks--;
+            GameUIManager.instance.RocksCount(currentRocks);
+            if (animator != null && hasThrowParam)
+            {
+                
                 animator.SetTrigger(throwHash);
             }
-            else
-            {
-                Debug.LogWarning("[Throw] Could NOT trigger throw — animator or param missing!");
-            }
+            ThrowRock();
         }
+    }
+    private void ThrowRock()
+    {
+        Vector3 throwDirection = cameraTransform!=null?cameraTransform.forward:transform.forward;
+        Vector3 spawnPosition = transform.position + Vector3.up * 1.3f + throwDirection * 0.5f;
+        GameObject rock;
+        if (rockPrefab != null)
+        {
+            rock = Instantiate(rockPrefab, spawnPosition, Quaternion.identity);
+        }
+        else
+        {
+            rock = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            rock.name = "ThrownRock";
+            rock.transform.position = spawnPosition;
+        }
+        Rigidbody rb = rock.GetComponent<Rigidbody>();
+        Collider rockCollider = rock.GetComponent<Collider>();
+
+        rb.AddForce(throwDirection * throwForce, ForceMode.VelocityChange);
+        Destroy(rock,rockLifeTime);
     }
     /// <summary>
     /// Reads movement input from keyboard (WASD / Arrows) and Gamepad.
@@ -270,6 +298,17 @@ public class PlayerMoveMent : MonoBehaviour
 
         throwHash = Animator.StringToHash(throwParameter);
         hasThrowParam = HasParameter(animator, throwParameter);
+    }
+
+    public void OnTriggerEnter(Collider other)
+       {
+        if(other.gameObject.CompareTag("Player"))
+        {
+        GameUIManager.instance. ShowWinScreen();
+        }
+        else{
+            GameUIManager.instance.ShowLosescreen();
+        }
     }
 
     private bool HasParameter(Animator anim, string paramName)

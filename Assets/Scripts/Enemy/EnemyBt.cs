@@ -22,10 +22,12 @@ public class EnemyBt : MonoBehaviour
     }
     private void BuildTree()
     {
-        PatrolNode patrolNode=new PatrolNode(blackboard);
+        PatrolNode patrolNode = new PatrolNode(blackboard);
+        ChaseNode chaseNode = new ChaseNode(blackboard);
 
-        rootNode=new Selector(new List<Node>
+        rootNode = new Selector(new List<Node>
         {
+            chaseNode,
             patrolNode
         });
     }
