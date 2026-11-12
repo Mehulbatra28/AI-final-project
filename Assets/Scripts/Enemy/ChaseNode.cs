@@ -35,6 +35,10 @@ public class ChaseNode : Node
 
         blackboard.isWaiting = false;
         blackboard.waitTimer = 0f;
+        blackboard.isDistracted = false;
+        blackboard.hasReachedDistraction = false;
+        blackboard.agent.speed = blackboard.chaseSpeed;
+        blackboard.agent.SetDestination(blackboard.player.position);
         blackboard.agent.speed = blackboard.chaseSpeed;
         blackboard.agent.SetDestination(blackboard.player.position);
 

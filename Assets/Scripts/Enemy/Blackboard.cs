@@ -26,11 +26,18 @@ public class Blackboard : MonoBehaviour
 
     public int currentWayPointIndex = 0;
    public float waitTimer = 0f;
-   public bool isWaiting = false;
+    public bool isWaiting = false;
 
-   private void Awake()
-   {
-    if (agent == null)
+
+    public bool isDistracted = false;
+    public Vector3 distractionpoint;
+    public float InvestigationDuration = 3.9f;
+    public float InvestigateTimer = 0f;
+    public bool hasReachedDistraction = false;
+
+    private void Awake()
+    {
+        if (agent == null)
         {
             agent = GetComponent<NavMeshAgent>();
 
@@ -41,13 +48,28 @@ public class Blackboard : MonoBehaviour
 
 
         }
-        if(player==null)
+        if (player == null)
         {
             GameObject playerObj = GameObject.FindWithTag("Player");
-            if(playerObj!=null)
+            if (playerObj != null)
             {
                 player = playerObj.transform;
             }
         }
+    }
+    public void TriggerDistraction(Vector3 position)
+    {
+        if(NavMesh.SamplePosition(position,out NavMeshHit hit,5f,NavMesh.AllAreas))
+        {
+            distractionpoint = hit.position;
+        }
+        else
+        {
+            distractionpoint = position;
+        }
+
+        isDistracted = true;
+        hasReachedDistraction = false;
+        InvestigateTimer = 0f;
     }
 }
