@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Rock : MonoBehaviour
 {
-    public float SoundRadius = 100f;
+    public float SoundRadius = 50f;
     private bool hasTriggered = false;
 
     private void OnCollisionEnter(Collision collision)

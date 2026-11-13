@@ -22,6 +22,7 @@ public class EnemyBt : MonoBehaviour
     }
     private void BuildTree()
     {
+        ShootNode shootNode = new ShootNode(blackboard);
         ChaseNode chaseNode = new ChaseNode(blackboard);
         InvestigationNode investigationNode= new InvestigationNode(blackboard);
         PatrolNode patrolNode = new PatrolNode(blackboard);
@@ -29,6 +30,7 @@ public class EnemyBt : MonoBehaviour
 
         rootNode = new Selector(new List<Node>
         {
+            shootNode,
             chaseNode,
             investigationNode,
             patrolNode

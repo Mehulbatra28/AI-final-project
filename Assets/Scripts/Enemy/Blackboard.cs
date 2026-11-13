@@ -35,6 +35,10 @@ public class Blackboard : MonoBehaviour
     public float InvestigateTimer = 0f;
     public bool hasReachedDistraction = false;
 
+    public float shootDistanceThreshold = 6f;
+    public float shootDelay = 1.5f;
+    public float shootTimer = 0f;
+
     private void Awake()
     {
         if (agent == null)
