@@ -24,7 +24,8 @@ public class EnemyBt : MonoBehaviour
     {
         ShootNode shootNode = new ShootNode(blackboard);
         ChaseNode chaseNode = new ChaseNode(blackboard);
-        InvestigationNode investigationNode= new InvestigationNode(blackboard);
+        AlarmNode alarmNode = new AlarmNode(blackboard);
+        InvestigationNode investigationNode = new InvestigationNode(blackboard);
         PatrolNode patrolNode = new PatrolNode(blackboard);
       
 
@@ -32,6 +33,7 @@ public class EnemyBt : MonoBehaviour
         {
             shootNode,
             chaseNode,
+            alarmNode,
             investigationNode,
             patrolNode
         });

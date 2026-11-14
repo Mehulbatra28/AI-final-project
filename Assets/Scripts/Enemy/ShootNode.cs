@@ -18,6 +18,10 @@ public class ShootNode : Node
             return NodeState.FAILURE;
         }
         bool canSee = CanSeePlayer();
+        if(canSee)
+        {
+            blackboard.wasChasingPlayer = true;
+        }
 
         if (!canSee)
         {

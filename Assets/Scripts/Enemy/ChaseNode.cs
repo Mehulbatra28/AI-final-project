@@ -22,6 +22,7 @@ public class ChaseNode : Node
         if (canSee)
         {
             blackboard.LoseSightTimer = blackboard.LoseSightCooldown;
+            blackboard.wasChasingPlayer = true;
         }
         else if (blackboard.LoseSightTimer > 0f)
         {
@@ -30,6 +31,11 @@ public class ChaseNode : Node
 
         if (!canSee && blackboard.LoseSightTimer <=0f)
         {
+            if(blackboard.wasChasingPlayer)
+            {
+                blackboard.wasChasingPlayer = false;
+                blackboard.RaiseAlarm();
+            }
             return NodeState.FAILURE;
         }
 
